@@ -1,97 +1,23 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Homepage</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
     body {
-  font-family: Arial, sans-serif;
-  }
-
-    header{
-    position: relative;
-    background-color:rgb(255, 255, 255);
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    padding: 20px 90px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 99;
-    }
-
-    nav {
-  background-color: #333;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: row-reverse;
-  padding-left: 1500px;
-  padding-top: 10px;
-}
-
-    .nav-menu {
-  list-style: none;
-  display: flex;
-  padding: 5px;
-}
-
-.nav-menu li {
-  position: relative;
-  margin-right: 5px;
-}
-
-.nav-menu a {
-  color: white;
-  text-decoration: none;
-  padding: 0 10px;
-  display: block;
-}
-
-.nav-menu a:hover {
-  background-color: #333;
-  border-radius: 5px;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  background-color: #444;
-  top: 100%;
-  left: 0;
-  min-width: 160px;
-  border-radius: 5px;
-  list-style: none;
-}
-
-.dropdown-menu li {
-  margin: 0;
-}
-
-.dropdown-menu a {
-  padding: 10px 20px;
-  white-space: nowrap;
-}
-
-.dropdown-menu a:hover {
-  background-color: #555;
-}
-
-/* Show dropdown on hover */
-.dropdown:hover .dropdown-menu {
-  display: block;
+    margin: 0;
+    font-family: Arial, sans-serif;
 }
 
 
-
-
-
-
-
+/*for logout popup*/
 .popup{
   width: 400p;
   background: rgba( 255, 255, 255, 0.15 );
@@ -101,7 +27,7 @@
   border-radius: 10px;
   border: 1px solid rgba( 255, 255, 255, 0.18 );
   position: fixed;
-  top: 20%;
+  top: 0;
   left: 90%;
   transform: translate(-50%, -50%) scale(0.1);
   text-align: center;
@@ -114,6 +40,7 @@
 .open-popup{
   visibility: visible;
   top: 40%;
+  left: 50%;
   transform: translate(-50%, -50%) scale(1);
 }
 
@@ -147,35 +74,145 @@
    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
 }
 
-.profileContianer{
 
+
+
+.grid-container {
+    display: grid;
+    grid-template-areas:
+        "nav nav"
+        "side body";
+    grid-template-rows: 1fr 10fr;
+    grid-template-columns: 1fr 2fr;
+    height: 100vh;
+
+    
+
+.nav {
+    grid-area: nav;
+    background-color:rgb(221, 221, 221);
+    padding: 10px;
+  }
 }
-  </style>
-</head>
+
+.side {
+    grid-area: side;
+    background-color:rgb(221, 221, 221);
+    padding: 10px;
+}
+
+.body {
+    grid-area: body;
+    background-color:rgb(221, 221, 221);
+    padding: 10px;
+}
+
+
+
+
+/*for navigation bar*/
+nav {
+  background-color: #333;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 5px;
+}
+
+    .nav-menu {
+  list-style: none;
+  display: flex;
+  padding: 5px;
+}
+
+.nav-menu li {
+  position: relative;
+  margin-right: 5px;
+}
+
+.nav-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 0 10px;
+  display: block;
+}
+
+.nav-menu 
+
+.nav-menu a:hover {
+  background-color: #333;
+  border-radius: 5px;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #444;
+  top: 100%;
+  left: -200%;
+  min-width: 130px;
+  border-radius: 5px;
+  list-style: none;
+}
+
+.dropdown-menu li {
+  margin: 0;
+}
+
+.dropdown-menu a {
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+
+.dropdown-menu a:hover {
+  background-color: #555;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+
+
+/* Profile section styles */
+.profile {
+   background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: #333 solid 2px; 
+}
+
+.profile img {
+    border-radius: 50%;
+    border: #333 solid 2px;
+}
+
+
+
+
+/* Wall section styles */
+.wall{
+  background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: #333 solid 2px;
+    flex-direction: row;
+}
+
+.createContent {
+    background-color: #f0f0f0;
+    padding: 0 10px;
+    border-radius: 8px;
+    text-align: left;
+    border: #333 solid 2px;
+}
+</style>
 <body>
-  <?php
-  session_start();
-  ?>
-  
-<header>
-        <nav>
-            <ul class="nav-menu">
-              <li><a href="#">Home</a></li>
-              <li><a href="profile.php" id="aboutButton">Friends</a></li>
-              <li class="dropdown">
-                <a href="#">Menu</a>
-                <ul class="dropdown-menu">
-                  <li><a href="#">Profile</a></li>
-                  <li><a href="#">Settings</a></li>
-                  <li><a href="#" onclick="openPopup()">Logout</a></li>
-                </ul>
-              </li>
-            </ul>
-          </nav>
-  </header>
-  <main>
-    <!-- Logout popup-->
-  <div class="LogoutContainer">
+<!-- Logout popup-->
+<div class="LogoutContainer">
             <div class="popup" id="popup">
                 <h2>Logout</h2>
                 <p>Are you sure you want to logout?</p>
@@ -193,33 +230,59 @@
                 <button onclick="closePopup()">No</button>
             </div>
         </div>
-<!--profile popup-->
-  <div class="profileContianer" id="profileContainer">
-    <div class="Profile" id="profile">
-      <img src="images/2x2.jpg" class="rounded-circle" alt="Cinque Terre" width="230" height="230"> 
 
-      <?php
-      if (isset($_SESSION['username'])) {
-        echo "<h1>" . htmlspecialchars($_SESSION['username']) . "</h1>";
-      } else {
-        echo "<h1>Welcome, Guest!</h1>";
-      }
-      ?>
+
+
+    <div class="grid-container">
+        <div class="nav">
+            <nav>
+                <ul class="nav-menu">
+                  <li><a href="#"><ion-icon name="home-sharp" size="large"></ion-icon></a></li>
+                  <li><a href="#" ><ion-icon name="people-sharp" size="large"></ion-icon></a></li>
+                  <li class="dropdown">
+                    <a href="#"><ion-icon name="menu-sharp" size="large"></ion-icon></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">Profile</a></li>
+                      <li><a href="#">Settings</a></li>
+                      <li><a href="#" onclick="openPopup()">Logout</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </nav>
+        </div>
+        <div class="side">
+            <div class="profile">
+                <img src="images/profile.svg" alt="Profile Picture" width="100" height="100">
+                <?php
+                  if (isset($_SESSION['username'])) {
+                    echo "<h1>" . htmlspecialchars($_SESSION['username']) . "</h1>";
+                  } else {
+                    echo "<h1>Welcome, Guest!</h1>";
+                  }
+                  ?>
+            </div>
+        </div>
+        <div class="body">
+          <div class="wall">
+            <div class="createContent">
+              <h2>Share your thoughts with the world!</h2>
+              <form action="" method="POST">
+                <textarea id="content" name="content" rows="3" cols="50" placeholder="What's on your mind <?php
+                  if (isset($_SESSION['username'])) {
+                    echo htmlspecialchars($_SESSION['username']) . "?";
+                  } else {
+                    echo "Welcome, Guest!";
+                  }
+                  ?>"></textarea>
+                <button type="submit">Post</button>
+            </div>
+          </div>
+        </div>
     </div>
-  </div>      
-        
-    <div class="grid">
-
-    </div>
-
-  </main>
-
-
-
-
-
-  
 </body>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
 <script>
 
 let popup = document.getElementById("popup");
@@ -231,14 +294,6 @@ let popup = document.getElementById("popup");
       popup.classList.remove("open-popup");
     }
 
-    let popupProfile = document.getElementById("ProfileContainer");
-
-function openProfile(){
-  popupProfile.classList.add("open-profile");
-}
-function closeProfile(){
-  popupProfile.classList.remove("open-profile");
-}
-
 </script>
+
 </html>
