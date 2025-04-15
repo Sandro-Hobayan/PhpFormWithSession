@@ -147,15 +147,21 @@
    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
 }
 
-.profile
+.profileContianer{
+
+}
   </style>
 </head>
 <body>
+  <?php
+  session_start();
+  ?>
+  
 <header>
         <nav>
             <ul class="nav-menu">
               <li><a href="#">Home</a></li>
-              <li><a href="#" id="aboutButton">Profile</a></li>
+              <li><a href="profile.php" id="aboutButton">Friends</a></li>
               <li class="dropdown">
                 <a href="#">Menu</a>
                 <ul class="dropdown-menu">
@@ -188,12 +194,11 @@
             </div>
         </div>
 <!--profile popup-->
-  <div class="profileContianer">
-    <div class="proContainer">
+  <div class="profileContianer" id="profileContainer">
+    <div class="Profile" id="profile">
       <img src="images/2x2.jpg" class="rounded-circle" alt="Cinque Terre" width="230" height="230"> 
 
       <?php
-      session_start();
       if (isset($_SESSION['username'])) {
         echo "<h1>" . htmlspecialchars($_SESSION['username']) . "</h1>";
       } else {
@@ -203,6 +208,10 @@
     </div>
   </div>      
         
+    <div class="grid">
+
+    </div>
+
   </main>
 
 
@@ -221,6 +230,15 @@ let popup = document.getElementById("popup");
     function closePopup(){
       popup.classList.remove("open-popup");
     }
+
+    let popupProfile = document.getElementById("ProfileContainer");
+
+function openProfile(){
+  popupProfile.classList.add("open-profile");
+}
+function closeProfile(){
+  popupProfile.classList.remove("open-profile");
+}
 
 </script>
 </html>

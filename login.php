@@ -74,7 +74,7 @@
 
           echo '<script type="text/javascript">';
             echo 'alert("Welcome, ' . $row['username'] . '!");';
-          echo 'window.location.href = "homepage.php";';
+          echo 'window.location.href = "home.php";';
           echo '</script>';
         } else {
           echo '<script type="text/javascript">';
