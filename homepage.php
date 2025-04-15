@@ -199,8 +199,7 @@ nav {
     border-radius: 8px;
     text-align: center;
     border: #333 solid 2px;
-    flex-direction: row;
-}
+  }
 
 .createContent {
     background-color: #f0f0f0;
@@ -209,11 +208,38 @@ nav {
     text-align: left;
     border: #333 solid 2px;
 }
+
+form{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-group{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+textarea{
+  margin-right: 10px;
+  width: 500px;
+}
+
+button[type="submit"] {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 </style>
 <body>
 <!-- Logout popup-->
 <div class="LogoutContainer">
-            <div class="popup" id="popup">
+              <div class="popup" id="popup">
                 <h2>Logout</h2>
                 <p>Are you sure you want to logout?</p>
                 <form method="POST" action="homepage.php">
@@ -229,7 +255,7 @@ nav {
                   ?>
                 <button onclick="closePopup()">No</button>
             </div>
-        </div>
+</div>
 
 
 
@@ -264,18 +290,22 @@ nav {
         </div>
         <div class="body">
           <div class="wall">
-            <div class="createContent">
-              <h2>Share your thoughts with the world!</h2>
-              <form action="" method="POST">
-                <textarea id="content" name="content" rows="3" cols="50" placeholder="What's on your mind <?php
-                  if (isset($_SESSION['username'])) {
-                    echo htmlspecialchars($_SESSION['username']) . "?";
-                  } else {
-                    echo "Welcome, Guest!";
-                  }
-                  ?>"></textarea>
-                <button type="submit">Post</button>
-            </div>
+          <div class="createContent">
+            <form action="" method="POST">
+                <h2>Share your thoughts with the world!</h2>
+                <div class="form-group">
+                    <textarea id="content" name="content" rows="3" cols="50" placeholder="What's on your mind <?php
+                        if (isset($_SESSION['username'])) {
+                            echo htmlspecialchars($_SESSION['username']) . "?";
+                        } else {
+                            echo "Welcome, Guest!";
+                        }
+                        ?>"></textarea>
+                    <button type="submit">Post</button>
+                </div>
+            </form>
+</div>
+
           </div>
         </div>
     </div>
