@@ -67,6 +67,8 @@ session_start();
   background: #333;
   color: #fff;
   border: 0;
+  display: flex;
+  justify-content: center;
   outline: none;
   font-size: 18px;
   border-radius: 4px;
@@ -195,10 +197,13 @@ nav {
 /* Wall section styles */
 .wall{
   background-color: #f0f0f0;
-    padding: 20px;
+    padding: 10px 20px;
     border-radius: 8px;
     text-align: center;
     border: #333 solid 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
 .createContent {
@@ -235,6 +240,16 @@ button[type="submit"] {
     border-radius: 5px;
     cursor: pointer;
 }
+
+
+
+.everycontent{
+  background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: #333 solid 1px;
+}
 </style>
 <body>
 <!-- Logout popup-->
@@ -242,14 +257,16 @@ button[type="submit"] {
               <div class="popup" id="popup">
                 <h2>Logout</h2>
                 <p>Are you sure you want to logout?</p>
-                <form method="POST" action="homepage.php">
+                <form method="POST" action="">
                     <input type="hidden" name="logout" value="1">
                     <button type="submit">Yes</button>
                 </form>
                 <?php
                   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                     session_destroy();
-                    header("Location: login.php");
+                    echo '<script type="text/javascript">';
+                    echo 'window.location.href = "login.php";';
+                    echo '</script>';
                     exit();
                   }
                   ?>
@@ -304,8 +321,10 @@ button[type="submit"] {
                     <button type="submit">Post</button>
                 </div>
             </form>
-</div>
-
+          </div>
+            <div class="evercontent">
+              <h1>hello</h1>
+            </div>
           </div>
         </div>
     </div>
