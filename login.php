@@ -70,6 +70,7 @@
         if(mysqli_num_rows($query) > 0){
           $row = mysqli_fetch_assoc($query);
           session_start();
+          $_SESSION['user_id'] = $row['id'];
           $_SESSION['username'] = $row['username'];
 
           echo '<script type="text/javascript">';

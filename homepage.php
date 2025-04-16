@@ -19,7 +19,7 @@ session_start();
 
 /*for logout popup*/
 .popup{
-  width: 400p;
+  width: 250px;
   background: rgba( 255, 255, 255, 0.15 );
   box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
   backdrop-filter: blur( 12.5px );
@@ -245,9 +245,17 @@ button[type="submit"] {
 
 .everycontent{
   background-color: #f0f0f0;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
-    text-align: center;
+    text-align: left;
+    border: #333 solid 1px;
+}
+
+.everycontent .post{
+  background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
     border: #333 solid 1px;
 }
 </style>
@@ -273,9 +281,6 @@ button[type="submit"] {
                 <button onclick="closePopup()">No</button>
             </div>
 </div>
-
-
-
     <div class="grid-container">
         <div class="nav">
             <nav>
@@ -300,30 +305,69 @@ button[type="submit"] {
                   if (isset($_SESSION['username'])) {
                     echo "<h1>" . htmlspecialchars($_SESSION['username']) . "</h1>";
                   } else {
-                    echo "<h1>Welcome, Guest!</h1>";
+                    echo "<h1>Logged in as Guest</h1>";
                   }
                   ?>
             </div>
         </div>
         <div class="body">
-          <div class="wall">
-          <div class="createContent">
+          <div class="wall" style="overflow-y: auto; max-height: calc(100vh - 100px);">
+            <div class="createContent">
             <form action="" method="POST">
-                <h2>Share your thoughts with the world!</h2>
-                <div class="form-group">
-                    <textarea id="content" name="content" rows="3" cols="50" placeholder="What's on your mind <?php
-                        if (isset($_SESSION['username'])) {
-                            echo htmlspecialchars($_SESSION['username']) . "?";
-                        } else {
-                            echo "Welcome, Guest!";
-                        }
-                        ?>"></textarea>
-                    <button type="submit">Post</button>
-                </div>
+              <h2>Share your thoughts with the world!</h2>
+              <div class="form-group">
+              <textarea id="content" name="content" rows="3" cols="50" placeholder="What's on your mind <?php
+          if (isset($_SESSION['username'])) {
+          echo htmlspecialchars($_SESSION['username']) . "?";
+          } else {
+          echo "Welcome, Guest!";
+          }
+          ?>" required></textarea>
+              <button type="submit">Post</button>
+              </div>
             </form>
+
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['content'])) {
+              include 'conn.php';
+
+              $content = $conn->real_escape_string($_POST['content']);
+              $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+              if ($userId) {
+              $sql = "INSERT INTO user_content (user_id, content, created_at) VALUES ('$userId', '$content', NOW())";
+              if ($conn->query($sql) === TRUE) {
+          echo "<script>alert('Post shared successfully!');</script>";
+              } else {
+          echo "<script>alert('Error: " . $conn->error . "');</script>";
+              }
+              } else {
+              echo "<script>alert('You must be logged in to post.');</script>";
+              }
+            }
+            ?>
           </div>
-            <div class="evercontent">
-              <h1>hello</h1>
+            <div class="everycontent">
+              <?php
+              include 'conn.php';
+              $sql = "SELECT users.username, user_content.content, user_content.created_at
+              FROM users
+              JOIN user_content ON users.id = user_content.user_id
+              ORDER BY user_content.created_at DESC";
+              $result = $conn->query($sql);
+
+          if ($result->num_rows > 0) {
+              while ($row = $result->fetch_assoc()) {
+            echo "<div class='post'>";
+            echo "<h3>" . htmlspecialchars($row['username']) . "</h3>";
+            echo "<small>Posted on " . htmlspecialchars($row['created_at']) . "</small>";
+            echo "<p>" . htmlspecialchars($row['content']) . "</p>";
+            echo "</div>";
+              }
+          } else {
+              echo "<div class='post'><p>No posts available. Be the first to share your thoughts!</p></div>";
+          }
+          ?>
             </div>
           </div>
         </div>
