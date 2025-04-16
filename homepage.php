@@ -186,11 +186,28 @@ nav {
     border: #333 solid 2px; 
 }
 
-.profile img {
-    border-radius: 50%;
+.profile
+
+.profileAndCover {
+    border-radius: 10px;
+    margin-bottom: 0;
+}
+
+.profileAndCover #cover {
+    border-radius: 8px 8px 8px 8px;
+    background: #888;
+    width: 100%; 
+    height: 200px;
     border: #333 solid 2px;
 }
 
+.profileAndCover #profile {
+    border-radius: 50%;
+    border: #333 solid 2px;
+    margin-top: -50px;
+    z-index: 1;
+    background: #888;
+}
 
 
 
@@ -299,8 +316,15 @@ button[type="submit"] {
               </nav>
         </div>
         <div class="side">
-            <div class="profile">
-                <img src="images/profile.svg" alt="Profile Picture" width="100" height="100">
+            <div class="profile" style="overflow-y: auto; max-height: calc(100vh - 100px);">
+                <div class="profileAndCover">
+                <?php
+                  $coverPhoto = isset($_SESSION['cover_photo']) ? $_SESSION['cover_photo'] : 'images/defaultbg.png';
+                  $profilePhoto = isset($_SESSION['profile_photo']) ? $_SESSION['profile_photo'] : 'images/defaultprofile.png';
+                ?>
+                <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="200px" id="cover">
+                <img src="<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="100" height="100" id="profile">
+                </div>
                 <?php
                   if (isset($_SESSION['username'])) {
                     echo "<h1>" . htmlspecialchars($_SESSION['username']) . "</h1>";
@@ -308,6 +332,11 @@ button[type="submit"] {
                     echo "<h1>Logged in as Guest</h1>";
                   }
                   ?>
+              <div class="userButton">
+                <button>profile</button>
+                <button>posts</button>
+                <button>photos</button>
+              </div>
             </div>
         </div>
         <div class="body">
@@ -341,9 +370,13 @@ button[type="submit"] {
               } else {
           echo "<script>alert('Error: " . $conn->error . "');</script>";
               }
-              } else {
-              echo "<script>alert('You must be logged in to post.');</script>";
-              }
+                } else {
+                echo "<script>
+                if (confirm('You must be logged in to post. Do you want to go to the login page?')) {
+                  window.location.href = 'login.php';
+                }
+                </script>";
+                }
             }
             ?>
           </div>
