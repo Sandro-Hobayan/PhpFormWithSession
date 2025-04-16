@@ -186,8 +186,6 @@ nav {
     border: #333 solid 2px; 
 }
 
-.profile
-
 .profileAndCover {
     border-radius: 10px;
     margin-bottom: 0;
@@ -207,6 +205,15 @@ nav {
     margin-top: -50px;
     z-index: 1;
     background: #888;
+}
+
+.profile .userButton button{
+    background-color: #333;
+    color: white;
+    padding: 8px 13px;
+    cursor: pointer;
+    margin: 10px 5px 0 5px;
+    border-radius: 5px;
 }
 
 
