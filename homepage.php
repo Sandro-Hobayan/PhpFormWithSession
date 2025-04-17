@@ -179,6 +179,8 @@ if (isset($_SESSION['user_id'])) {
   z-index: 1001;
 }
 
+
+
 .coverpreview #closebtn{
   position: absolute;
   top: 0;
@@ -458,7 +460,7 @@ button[type="submit"] {
         closeCoverPreview();
       }
     </script>
-    <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" id="cover" width="100%" height="200px">
+    <img src="<?php echo htmlspecialchars($coverPhoto ?: 'images/defaultbg.png'); ?>" alt="Cover photo" id="cover" width="100%" height="200px">
 
     <form action="" method="POST" enctype="multipart/form-data">
       <input type="file" name="cover_photo" accept="image/*" onchange="previewCoverPhoto(event)">
@@ -475,6 +477,33 @@ button[type="submit"] {
       }
       }
       </script>
+      <button type="submit" name="delete_cover">Delete</button>
+      <?php
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
+        $defaultCoverPhoto = 'images/defaultbg.png';
+        $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+        if ($userId) {
+          $updateQuery = "UPDATE profile SET cover = ? WHERE user_id = ?";
+          $stmt = $conn->prepare($updateQuery);
+          $stmt->bind_param("si", $defaultCoverPhoto, $userId);
+
+          if ($stmt->execute()) {
+        $_SESSION['cover_photo'] = $defaultCoverPhoto;
+        echo "<script>
+            alert('Cover photo reset to default successfully!');
+            document.getElementById('cover').src = '$defaultCoverPhoto';
+            document.querySelector('.coverpreview img').src = '$defaultCoverPhoto';
+            </script>";
+          } else {
+        echo "<script>alert('Database error: " . $stmt->error . "');</script>";
+          }
+          $stmt->close();
+        } else {
+          echo "<script>alert('You must be logged in to reset your cover photo.');</script>";
+        }
+      }
+      ?>
       <button type="submit" name="upload_cover">Upload</button>
     </form>
 
@@ -544,7 +573,7 @@ button[type="submit"] {
         <div class="nav">
             <nav>
                 <ul class="nav-menu">
-                  <li><a href="#"><ion-icon name="home-sharp" size="large"></ion-icon></a></li>
+                    <li><a href="refresh.php"><ion-icon name="home-sharp" size="large"></ion-icon></a></li>
                   <li><a href="#" ><ion-icon name="people-sharp" size="large"></ion-icon></a></li>
                   <li class="dropdown">
                     <a href="#"><ion-icon name="menu-sharp" size="large"></ion-icon></a>
