@@ -179,7 +179,18 @@ if (isset($_SESSION['user_id'])) {
   z-index: 1001;
 }
 
-
+.coverpreview #delete{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 8px 0px 8px 0px;
+}
 
 .coverpreview #closebtn{
   position: absolute;
@@ -452,6 +463,38 @@ button[type="submit"] {
 
 <!-- Cover photo preview -->
  <div class="coverpreview" id="coverpreview">
+<form method="POST">
+  <button type="submit" name="delete_cover" id="delete">Delete</button>
+</form>
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
+  include 'conn.php';
+
+  $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+  if ($userId) {
+    $defaultCover = 'images/defaultbg.png';
+
+    $updateQuery = "UPDATE profile SET cover = ? WHERE user_id = ?";
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param("si", $defaultCover, $userId);
+
+    if ($stmt->execute()) {
+      $_SESSION['cover_photo'] = $defaultCover;
+      echo "<script>
+        alert('Cover photo deleted successfully!');
+        document.getElementById('cover').src = '$defaultCover';
+        document.querySelector('.coverpreview img').src = '$defaultCover';
+      </script>";
+    } else {
+      echo "<script>alert('Database error: " . $stmt->error . "');</script>";
+    }
+    $stmt->close();
+  } else {
+    echo "<script>alert('You must be logged in to delete your cover photo.');</script>";
+  }
+}
+?>
     <button id="closebtn" onclick="closeCoverPreviewAndReset()">X</button>
     <script>
       function closeCoverPreviewAndReset() {
@@ -477,33 +520,6 @@ button[type="submit"] {
       }
       }
       </script>
-      <button type="submit" name="delete_cover">Delete</button>
-      <?php
-      if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
-        $defaultCoverPhoto = 'images/defaultbg.png';
-        $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-
-        if ($userId) {
-          $updateQuery = "UPDATE profile SET cover = ? WHERE user_id = ?";
-          $stmt = $conn->prepare($updateQuery);
-          $stmt->bind_param("si", $defaultCoverPhoto, $userId);
-
-          if ($stmt->execute()) {
-        $_SESSION['cover_photo'] = $defaultCoverPhoto;
-        echo "<script>
-            alert('Cover photo reset to default successfully!');
-            document.getElementById('cover').src = '$defaultCoverPhoto';
-            document.querySelector('.coverpreview img').src = '$defaultCoverPhoto';
-            </script>";
-          } else {
-        echo "<script>alert('Database error: " . $stmt->error . "');</script>";
-          }
-          $stmt->close();
-        } else {
-          echo "<script>alert('You must be logged in to reset your cover photo.');</script>";
-        }
-      }
-      ?>
       <button type="submit" name="upload_cover">Upload</button>
     </form>
 
