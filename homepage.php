@@ -144,7 +144,20 @@ if (isset($_SESSION['user_id'])) {
   padding: 5px 10px;
   cursor: pointer;
   overflow: hidden;
-  border-radius: 8px 0px 8px 0px;
+  border-radius: 5px 0px 5px 0px;
+}
+
+.profilecontainer #profilebtn{
+  position: absolute;
+  top: 60%;
+  right: 8px;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 5px 0px 0px 5px;
 }
 
 
@@ -195,6 +208,64 @@ if (isset($_SESSION['user_id'])) {
 }
 
 .coverpreview #closebtn{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0px 8px 0px 8px;
+}
+
+
+/*for profile photo preview*/
+.profilepreview {
+  width: 400px;
+  height: auto;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(12.5px);
+  -webkit-backdrop-filter: blur(12.5px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  text-align: center;
+  visibility: hidden;
+  padding: 10px;
+  border: #333 solid 2px;
+  transition: transform 0.4s, top 0.4s;
+}
+
+.open-profilepreview {
+  visibility: visible !important;
+  top: 40% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  z-index: 1001;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.profilepreview #delete {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 8px 0px 8px 0px;
+}
+
+.profilepreview #closebtn {
   position: absolute;
   top: 0;
   right: 0;
@@ -443,7 +514,8 @@ button[type="submit"] {
  <div class="profilecontainer" id="profilecontainer">
  <button id="closebtn" onclick="closeProfile()">X</button>
       <div class="profileAndCover">
-                <button id="coverbtn" onclick="openCoverPreview()">Change Cover Photo</button>
+                <button id="coverbtn" onclick="openCoverPreview()">View Cover Photo</button>
+                <button id="profilebtn" onclick="openProfilePreview()">View Profile Picture</button>
   
                 <?php
                   $coverPhoto = isset($_SESSION['cover_photo']) ? $_SESSION['cover_photo'] : 'images/defaultbg.png';
@@ -501,7 +573,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
     <script>
       function closeCoverPreviewAndReset() {
         const coverPreview = document.querySelector('.coverpreview img');
-        coverPreview.src = "<?php echo htmlspecialchars($coverPhoto); ?>"; // Reset to default or current cover photo
+        coverPreview.src = "<?php echo htmlspecialchars($coverPhoto); ?>";
         closeCoverPreview();
       }
     </script>
@@ -584,6 +656,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
       }
     }
     ?>
+  </div>
+
+
+  <!-- profile photo preview -->
+  <div class="profilepreview" id="profilepreview">
+  <form method="POST">
+    <button type="submit" name="delete_profile" id="delete">Delete</button>
+  </form>
+  <?php
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_profile'])) {
+    include 'conn.php';
+
+    $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+    if ($userId) {
+      $defaultAvatar = 'images/defaultprofile.png';
+
+      $updateQuery = "UPDATE profile SET avatar = ? WHERE user_id = ?";
+      $stmt = $conn->prepare($updateQuery);
+      $stmt->bind_param("si", $defaultAvatar, $userId);
+
+      if ($stmt->execute()) {
+        $_SESSION['profile_photo'] = $defaultAvatar;
+        echo "<script>
+          alert('Profile photo deleted successfully!');
+          document.getElementById('profile').src = '$defaultAvatar';
+        </script>";
+      } else {
+        echo "<script>alert('Database error: " . $stmt->error . "');</script>";
+      }
+      $stmt->close();
+    } else {
+      echo "<script>alert('You must be logged in to delete your profile photo.');</script>";
+    }
+  }
+  ?>
+  <button id="closebtn" onclick="closeProfilePreviewAndReset()">X</button>
+  <script>
+    function closeProfilePreviewAndReset() {
+      const profilePreview = document.getElementById('profile');
+      profilePreview.src = "<?php echo htmlspecialchars($profilePhoto); ?>";
+      closeProfilePreview();
+    }
+  </script>
+  <img src="<?php echo htmlspecialchars($profilePhoto ?: 'images/defaultprofile.png'); ?>" alt="Profile photo" id="profile-preview" width="300" height="300">
+
+  <form action="" method="POST" enctype="multipart/form-data">
+    <input type="file" name="profile_photo" accept="image/*" onchange="previewProfilePhoto(event)">
+    <script>
+      function previewProfilePhoto(event) {
+        const profilePreview = document.getElementById('profile-preview');
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            profilePreview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+    <button type="submit" name="upload_profile">Upload</button>
+  </form>
+
+  <?php
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_profile'])) {
+    include 'conn.php';
+
+    if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] === UPLOAD_ERR_OK) {
+      $fileTmpPath = $_FILES['profile_photo']['tmp_name'];
+      $fileName = $_FILES['profile_photo']['name'];
+      $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+      $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+      if (in_array(strtolower($fileExtension), $allowedExtensions)) {
+        $newFileName = uniqid() . '.' . $fileExtension;
+        $uploadPath = 'uploads/' . $newFileName;
+
+        if (move_uploaded_file($fileTmpPath, $uploadPath)) {
+          $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+          if ($userId) {
+            $checkProfileQuery = "SELECT * FROM profile WHERE user_id = ?";
+            $stmt = $conn->prepare($checkProfileQuery);
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+              $updateQuery = "UPDATE profile SET avatar = ? WHERE user_id = ?";
+              $stmt = $conn->prepare($updateQuery);
+              $stmt->bind_param("si", $uploadPath, $userId);
+            } else {
+              $insertQuery = "INSERT INTO profile (user_id, avatar) VALUES (?, ?)";
+              $stmt = $conn->prepare($insertQuery);
+              $stmt->bind_param("is", $userId, $uploadPath);
+            }
+
+            if ($stmt->execute()) {
+              $_SESSION['profile_photo'] = $uploadPath;
+              echo "<script>
+                  alert('Profile photo updated successfully!');
+                  document.getElementById('profile').src = '$uploadPath';
+                </script>";
+            } else {
+              echo "<script>alert('Database error: " . $stmt->error . "');</script>";
+            }
+            $stmt->close();
+          } else {
+            echo "<script>alert('You must be logged in to update your profile photo.');</script>";
+          }
+        } else {
+          echo "<script>alert('Error uploading the file.');</script>";
+        }
+      } else {
+        echo "<script>alert('Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.');</script>";
+      }
+    } else {
+      echo "<script>alert('No file uploaded or an error occurred.');</script>";
+    }
+  }
+  ?>
+</div>
   </div>
 
 
@@ -762,6 +957,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
 
     function closeCoverPreview() {
       opencoverpreview.classList.remove("open-coverpreview");
+    }
+
+
+
+
+    let openprofilepreview = document.getElementById("profilepreview");
+
+    function openProfilePreview() {
+      openprofilepreview.classList.add("open-profilepreview");
+      gridContainer.style.filter = "blur(5px)";
+    }
+
+    function closeProfilePreview() {
+      openprofilepreview.classList.remove("open-profilepreview");
     }
 
 
