@@ -106,7 +106,7 @@ session_start();
   z-index: 1000;
 }
 
-.profileAndCover #closebtn{
+.profilecontainer #closebtn{
   position: absolute;
   top: 0;
   right: 0;
@@ -119,11 +119,62 @@ session_start();
   border-radius: 0px 8px 0px 8px;
 }
 
-.coverpreview{
+.profilecontainer #coverbtn{
   position: absolute;
-  width: 500px;
-  height: 300px;
-  border-radius: 8px;
+  top: 51%;
+  right: 8px;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 8px 0px 8px 0px;
+}
+
+
+
+
+/*for cover photo preview*/
+.coverpreview{
+  width: 850px;
+  height: auto;
+  background: rgba( 255, 255, 255, 0.15 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 12.5px );
+  -webkit-backdrop-filter: blur( 12.5px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  text-align: center;
+  visibility: hidden;
+  padding: 10px;
+  border: #333 solid 2px;
+  transition: transform 0.4s, top 0.4s;
+}
+
+.open-coverpreview{
+  visibility: visible !important;
+  top: 30% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  z-index: 1001;
+}
+
+.coverpreview #closebtn{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0px 8px 0px 8px;
 }
 
 
@@ -283,6 +334,9 @@ nav {
   }
 
 .createContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     background-color: #f0f0f0;
     padding: 0 10px;
     border-radius: 8px;
@@ -360,16 +414,18 @@ button[type="submit"] {
 
 <!-- profile popup -->
  <div class="profilecontainer" id="profilecontainer">
-  <div class="profileAndCover">
-  <button id="closebtn" onclick="closeProfile()">X</button>
+ <button id="closebtn" onclick="closeProfile()">X</button>
+      <div class="profileAndCover">
+                <button id="coverbtn" onclick="openCoverPreview()">Change Cover Photo</button>
+  
                 <?php
                   $coverPhoto = isset($_SESSION['cover_photo']) ? $_SESSION['cover_photo'] : 'images/defaultbg.png';
                   $profilePhoto = isset($_SESSION['profile_photo']) ? $_SESSION['profile_photo'] : 'images/defaultprofile.png';
                 ?>
                 <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="200px" id="cover">
-
                 <img src="<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="100" height="100" id="profile">
-                </div>
+                
+      </div>
                 <?php
                   if (isset($_SESSION['username'])) {
                     echo "<h1>" . htmlspecialchars($_SESSION['username']) . "</h1>";
@@ -380,6 +436,15 @@ button[type="submit"] {
  </div>
 
 
+<!-- Cover photo preview -->
+ <div class="coverpreview" id="coverpreview">
+    <button id="closebtn" onclick="closeCoverPreview()">X</button>
+    <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" id="cover" width="100%" height="200px">
+
+      <form action="" method="POST" enctype="multipart/form-data">
+        <input type="file" name="cover_photo" accept="image/*">
+        <button type="submit">Upload</button>
+  </div>
 
 
     <div class="grid-container">
@@ -406,7 +471,9 @@ button[type="submit"] {
                   $coverPhoto = isset($_SESSION['cover_photo']) ? $_SESSION['cover_photo'] : 'images/defaultbg.png';
                   $profilePhoto = isset($_SESSION['profile_photo']) ? $_SESSION['profile_photo'] : 'images/defaultprofile.png';
                 ?>
+              
                 <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="200px" id="cover">
+
                 <img src="<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="100" height="100" id="profile">
                 </div>
                 <?php
@@ -430,12 +497,12 @@ button[type="submit"] {
               <h2>Share your thoughts with the world!</h2>
               <div class="form-group">
               <textarea id="content" name="content" rows="3" cols="50" placeholder="What's on your mind <?php
-          if (isset($_SESSION['username'])) {
-          echo htmlspecialchars($_SESSION['username']) . "?";
-          } else {
-          echo "Welcome, Guest!";
-          }
-          ?>" required></textarea>
+              if (isset($_SESSION['username'])) {
+              echo htmlspecialchars($_SESSION['username']) . "?";
+              } else {
+              echo "Welcome, Guest!";
+              }
+              ?>" required></textarea>
               <button type="submit">Post</button>
               </div>
             </form>
@@ -500,6 +567,8 @@ button[type="submit"] {
   
   let gridContainer = document.querySelector(".grid-container");
 
+
+  // Logout popup
     let popup = document.getElementById("popup");
 
     function openPopup(){
@@ -510,6 +579,9 @@ button[type="submit"] {
       popup.classList.remove("open-popup");
       gridContainer.style.filter = "none";
     }
+
+
+
 
 
     let profilepopup = document.getElementById("profilecontainer");
@@ -523,6 +595,24 @@ button[type="submit"] {
       profilepopup.classList.remove("open-profilecontainer");
       gridContainer.style.filter = "none";
     }
+
+
+
+
+    let opencoverpreview = document.getElementById("coverpreview");
+
+    function openCoverPreview() {
+      opencoverpreview.classList.add("open-coverpreview");
+      gridContainer.style.filter = "blur(5px)";
+    }
+
+    function closeCoverPreview() {
+      opencoverpreview.classList.remove("open-coverpreview");
+    }
+
+
+
+    
 
 </script>
 
