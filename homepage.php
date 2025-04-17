@@ -297,7 +297,7 @@ button[type="submit"] {
                   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                     session_destroy();
                     echo '<script type="text/javascript">';
-                    echo 'window.location.href = "login.php";';
+                    echo 'window.location.href = "loginpage.php";';
                     echo '</script>';
                     exit();
                   }
@@ -380,7 +380,7 @@ button[type="submit"] {
                 } else {
                 echo "<script>
                 if (confirm('You must be logged in to post. Do you want to go to the login page?')) {
-                  window.location.href = 'login.php';
+                  window.location.href = 'loginpage.php';
                 }
                 </script>";
                 }

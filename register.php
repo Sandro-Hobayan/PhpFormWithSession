@@ -81,7 +81,7 @@
             
             echo '<script type="text/javascript">';
             echo 'alert("Successfully registered!");';
-            echo 'window.location.href = "login.php";';
+            echo 'window.location.href = "loginpage.php";';
             echo '</script>';
             $query->close();
             $conn->close();}
@@ -100,7 +100,7 @@
 
     <button type="submit">Register</button>
   </form>
-  <p>Already have an account? <a href="login.php">Login here</a></p>
+  <p>Already have an account? <a href="loginpage.php">Login here</a></p>
   </div>
 </body>
 </html>
