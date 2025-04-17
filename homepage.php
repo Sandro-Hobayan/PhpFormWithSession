@@ -171,12 +171,14 @@ if (isset($_SESSION['user_id'])) {
   transition: transform 0.4s, top 0.4s;
 }
 
-.open-coverpreview{
+.open-coverpreview {
   visibility: visible !important;
-  top: 30% !important;
+  top: 40% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) scale(1) !important;
   z-index: 1001;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .coverpreview #delete{
@@ -447,7 +449,7 @@ button[type="submit"] {
                   $coverPhoto = isset($_SESSION['cover_photo']) ? $_SESSION['cover_photo'] : 'images/defaultbg.png';
                   $profilePhoto = isset($_SESSION['profile_photo']) ? $_SESSION['profile_photo'] : 'images/defaultprofile.png';
                 ?>
-                <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="200px" id="cover">
+                <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="300px" id="cover">
                 <img src="<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="100" height="100" id="profile">
                 
       </div>
@@ -503,7 +505,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
         closeCoverPreview();
       }
     </script>
-    <img src="<?php echo htmlspecialchars($coverPhoto ?: 'images/defaultbg.png'); ?>" alt="Cover photo" id="cover" width="100%" height="200px">
+    <img src="<?php echo htmlspecialchars($coverPhoto ?: 'images/defaultbg.png'); ?>" alt="Cover photo" id="cover" width="100%" height="500px">
 
     <form action="" method="POST" enctype="multipart/form-data">
       <input type="file" name="cover_photo" accept="image/*" onchange="previewCoverPhoto(event)">
@@ -622,7 +624,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_cover'])) {
                   $profilePhoto = isset($_SESSION['profile_photo']) ? $_SESSION['profile_photo'] : 'images/defaultprofile.png';
                 ?>
               
-                <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="200px" id="cover">
+                <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="auto" id="cover">
 
                 <img src="<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="100" height="100" id="profile">
                 </div>
