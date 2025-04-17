@@ -438,12 +438,73 @@ button[type="submit"] {
 
 <!-- Cover photo preview -->
  <div class="coverpreview" id="coverpreview">
-    <button id="closebtn" onclick="closeCoverPreview()">X</button>
+    <button id="closebtn" onclick="closeCoverPreviewAndReset()">X</button>
+    <script>
+      function closeCoverPreviewAndReset() {
+        const coverPreview = document.querySelector('.coverpreview img');
+        coverPreview.src = "<?php echo htmlspecialchars($coverPhoto); ?>"; // Reset to default or current cover photo
+        closeCoverPreview();
+      }
+    </script>
     <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" id="cover" width="100%" height="200px">
 
       <form action="" method="POST" enctype="multipart/form-data">
-        <input type="file" name="cover_photo" accept="image/*">
-        <button type="submit">Upload</button>
+        <input type="file" name="cover_photo" accept="image/*" onchange="previewCoverPhoto(event)">
+        <script>
+        function previewCoverPhoto(event) {
+            const coverPreview = document.querySelector('.coverpreview img');
+            const file = event.target.files[0];
+            if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+            coverPreview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            }
+        }
+        </script>
+        <button type="submit" name="upload_cover">Upload</button>
+      </form>
+
+      <?php
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_cover'])) {
+          include 'conn.php';
+
+          if (isset($_FILES['cover_photo']) && $_FILES['cover_photo']['error'] === UPLOAD_ERR_OK) {
+          $fileTmpPath = $_FILES['cover_photo']['tmp_name'];
+          $fileName = $_FILES['cover_photo']['name'];
+          $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+          $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+          if (in_array(strtolower($fileExtension), $allowedExtensions)) {
+          $newFileName = uniqid() . '.' . $fileExtension;
+          $uploadPath = 'uploads/' . $newFileName;
+
+          if (move_uploaded_file($fileTmpPath, $uploadPath)) {
+              $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+              if ($userId) {
+              $sql = "UPDATE profile SET cover_photo = '$uploadPath' WHERE user_id = '$userId'";
+              if ($conn->query($sql) === TRUE) {
+              $_SESSION['cover_photo'] = $uploadPath;
+              echo "<script>alert('Cover photo updated successfully!');</script>";
+              } else {
+              echo "<script>alert('Database error: " . $conn->error . "');</script>";
+              }
+              } else {
+              echo "<script>alert('You must be logged in to update your cover photo.');</script>";
+              }
+          } else {
+              echo "<script>alert('Error uploading the file.');</script>";
+          }
+          } else {
+          echo "<script>alert('Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.');</script>";
+          }
+          } else {
+          echo "<script>alert('No file uploaded or an error occurred.');</script>";
+          }
+      }
+      ?>
   </div>
 
 
@@ -483,11 +544,13 @@ button[type="submit"] {
                     echo "<h1>Logged in as Guest</h1>";
                   }
                   ?>
-              <div class="userButton">
-                <button onclick="openProfile()">profile</button>
-                <button>posts</button>
-                <button>photos</button>
-              </div>
+              <?php if (isset($_SESSION['username'])): ?>
+                <div class="userButton">
+                  <button onclick="openProfile()">profile</button>
+                  <button>posts</button>
+                  <button>photos</button>
+                </div>
+              <?php endif; ?>
             </div>
         </div>
         <div class="body">
