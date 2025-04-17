@@ -349,9 +349,6 @@ nav {
   }
 
 .createContent {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     background-color: #f0f0f0;
     padding: 0 10px;
     border-radius: 8px;
@@ -499,7 +496,6 @@ button[type="submit"] {
         $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
         if ($userId) {
-          // Check if the user already has a profile entry
           $checkProfileQuery = "SELECT * FROM profile WHERE user_id = ?";
           $stmt = $conn->prepare($checkProfileQuery);
           $stmt->bind_param("i", $userId);
@@ -507,12 +503,10 @@ button[type="submit"] {
           $result = $stmt->get_result();
 
           if ($result->num_rows > 0) {
-          // Update existing profile entry
           $updateQuery = "UPDATE profile SET cover = ? WHERE user_id = ?";
           $stmt = $conn->prepare($updateQuery);
           $stmt->bind_param("si", $uploadPath, $userId);
           } else {
-          // Insert new profile entry
           $insertQuery = "INSERT INTO profile (user_id, cover) VALUES (?, ?)";
           $stmt = $conn->prepare($insertQuery);
           $stmt->bind_param("is", $userId, $uploadPath);
@@ -555,9 +549,21 @@ button[type="submit"] {
                   <li class="dropdown">
                     <a href="#"><ion-icon name="menu-sharp" size="large"></ion-icon></a>
                     <ul class="dropdown-menu">
-                      <li><a href="#" onclick="openProfile()">Profile</a></li>
+                        <li>
+                        <?php if (isset($_SESSION['username'])): ?>
+                          <a href="#" onclick="openProfile()">Profile</a>
+                        <?php else: ?>
+                          <a href="#" onclick="alert('You must be logged in to view your profile.');">Profile</a>
+                        <?php endif; ?>
+                        </li>
                       <li><a href="#">Settings</a></li>
-                      <li><a href="#" onclick="openPopup()">Logout</a></li>
+                        <li>
+                        <?php if (isset($_SESSION['username'])): ?>
+                          <a href="#" onclick="openPopup()">Logout</a>
+                        <?php else: ?>
+                          <a href="loginpage.php">Login</a>
+                        <?php endif; ?>
+                        </li>
                     </ul>
                   </li>
                 </ul>
