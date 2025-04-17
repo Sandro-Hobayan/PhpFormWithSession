@@ -38,10 +38,11 @@ session_start();
 }
 
 .open-popup{
-  visibility: visible;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(1);
+  visibility: visible !important;
+  top: 40% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  z-index: 1000;;
 }
 
 .popup h2{
@@ -75,6 +76,57 @@ session_start();
   cursor: pointer;
    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
 }
+
+
+/*for profile popup*/
+.profilecontainer{
+  width: 650px;
+  background: rgba( 255, 255, 255, 0.15 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 12.5px );
+  -webkit-backdrop-filter: blur( 12.5px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  text-align: center;
+  visibility: hidden;
+  padding: 10px;
+  border: #333 solid 2px;
+  transition: transform 0.4s, top 0.4s;
+}
+
+.open-profilecontainer {
+  visibility: visible !important;
+  top: 40% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  z-index: 1000;
+}
+
+.profileAndCover #closebtn{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0px 8px 0px 8px;
+}
+
+.coverpreview{
+  position: absolute;
+  width: 500px;
+  height: 300px;
+  border-radius: 8px;
+}
+
+
 
 
 
@@ -305,6 +357,31 @@ button[type="submit"] {
                 <button onclick="closePopup()">No</button>
             </div>
 </div>
+
+<!-- profile popup -->
+ <div class="profilecontainer" id="profilecontainer">
+  <div class="profileAndCover">
+  <button id="closebtn" onclick="closeProfile()">X</button>
+                <?php
+                  $coverPhoto = isset($_SESSION['cover_photo']) ? $_SESSION['cover_photo'] : 'images/defaultbg.png';
+                  $profilePhoto = isset($_SESSION['profile_photo']) ? $_SESSION['profile_photo'] : 'images/defaultprofile.png';
+                ?>
+                <img src="<?php echo htmlspecialchars($coverPhoto); ?>" alt="Cover photo" width="100%" height="200px" id="cover">
+
+                <img src="<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="100" height="100" id="profile">
+                </div>
+                <?php
+                  if (isset($_SESSION['username'])) {
+                    echo "<h1>" . htmlspecialchars($_SESSION['username']) . "</h1>";
+                  } else {
+                    echo "<h1>Logged in as Guest</h1>";
+                  }
+                  ?>
+ </div>
+
+
+
+
     <div class="grid-container">
         <div class="nav">
             <nav>
@@ -314,7 +391,7 @@ button[type="submit"] {
                   <li class="dropdown">
                     <a href="#"><ion-icon name="menu-sharp" size="large"></ion-icon></a>
                     <ul class="dropdown-menu">
-                      <li><a href="#">Profile</a></li>
+                      <li><a href="#" onclick="openProfile()">Profile</a></li>
                       <li><a href="#">Settings</a></li>
                       <li><a href="#" onclick="openPopup()">Logout</a></li>
                     </ul>
@@ -340,7 +417,7 @@ button[type="submit"] {
                   }
                   ?>
               <div class="userButton">
-                <button>profile</button>
+                <button onclick="openProfile()">profile</button>
                 <button>posts</button>
                 <button>photos</button>
               </div>
@@ -416,15 +493,35 @@ button[type="submit"] {
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
-<script>
 
-let popup = document.getElementById("popup");
+
+
+<script>
+  
+  let gridContainer = document.querySelector(".grid-container");
+
+    let popup = document.getElementById("popup");
 
     function openPopup(){
       popup.classList.add("open-popup");
+      gridContainer.style.filter = "blur(5px)";
     }
     function closePopup(){
       popup.classList.remove("open-popup");
+      gridContainer.style.filter = "none";
+    }
+
+
+    let profilepopup = document.getElementById("profilecontainer");
+
+    function openProfile() {
+      profilepopup.classList.add("open-profilecontainer");
+      gridContainer.style.filter = "blur(5px)";
+    }
+
+    function closeProfile() {
+      profilepopup.classList.remove("open-profilecontainer");
+      gridContainer.style.filter = "none";
     }
 
 </script>
